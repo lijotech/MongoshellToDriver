@@ -58,16 +58,38 @@ const products = [
 router.get('/', (req, res, next) => {
   // Return a list of dummy products
   // Later, this data will be fetched from MongoDB
-  const queryPage = req.query.page;
-  const pageSize = 5;
-  let resultProducts = [...products];
-  if (queryPage) {
-    resultProducts = products.slice(
-      (queryPage - 1) * pageSize,
-      queryPage * pageSize
-    );
-  }
-  res.json(resultProducts);
+  // const queryPage = req.query.page;
+  // const pageSize = 5;
+  // let resultProducts = [...products];
+  // if (queryPage) {
+  //   resultProducts = products.slice(
+  //     (queryPage - 1) * pageSize,
+  //     queryPage * pageSize
+  //   );
+  // }
+  MongoClient.connect('mongodb+srv://lijomongo:admin@cluster0.ob04tyz.mongodb.net/shop?retryWrites=true&w=majority')
+  .then(client => {
+    const products=[];
+    client
+      .db()
+      .collection('products')
+      .find()
+      .forEach(prod=>{
+        console.log(prod);
+        prod.price=prod.price.toString();
+        products.push(prod);
+      })
+      .then(result=>{       
+        res.status(200).json(products);
+        client.close();
+      })
+      .catch(err=>{
+        console.log(err);
+          client.close();
+          res.status(500).json({ message: 'An error occurred.' });
+      });
+  //res.json(resultProducts);
+});
 });
 
 // Get single product
