@@ -68,7 +68,7 @@ router.get('/', (req, res, next) => {
   //   );
   // }
   const products = [];
-  db.getDb()
+  db.getDb().db()
     .collection('products')
     .find()
     .forEach(prod => {      
@@ -102,7 +102,7 @@ router.post('', (req, res, next) => {
     price: decimal128.fromString(req.body.price.toString()), // store this as 128bit decimal in MongoDB
     image: req.body.image
   };
-  db.getDb()
+  db.getDb().db()
     .collection('products')
     .insertOne(newProduct)
     .then(result => {
